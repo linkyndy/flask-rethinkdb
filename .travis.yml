@@ -1,7 +1,11 @@
 language: python
-services:
-    - rethinkdb
+before_install:
+    - sudo add-apt-repository ppa:rethinkdb/ppa
+    - sudo apt-get update
+    - sudo apt-get install rethinkdb
 install:
     - pip install .
+before_script:
+    - rethinkdb --daemon
 script:
     - nosetests tests
