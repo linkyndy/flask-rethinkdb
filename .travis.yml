@@ -1,0 +1,7 @@
+language: python
+services:
+    - rethinkdb
+install:
+    - pip install .
+script:
+    - nosetests tests
