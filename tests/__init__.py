@@ -36,3 +36,33 @@ class InitTests(TestCase):
             else:
                 # Do some cleanup
                 r.table_drop('table').run(db.conn)
+
+    def test_connection_with_database(self):
+        app = Flask(__name__)
+        db = RethinkDB(app, db='test')
+
+        with app.test_request_context():
+            try:
+                # Make sure RethinkDB is turned on!
+                r.table_create('table').run(db.conn)
+            except (RqlDriverError, RqlRuntimeError) as e:
+                self.fail(e)
+            else:
+                # Do some cleanup
+                r.table_drop('table').run(db.conn)
+
+    def test_connection_with_inexisting_database(self):
+        app = Flask(__name__)
+        db = RethinkDB(app, db='doesnotexist')
+
+        with app.test_request_context():
+            try:
+                # Make sure RethinkDB is turned on!
+                # Specifying an inexisting database should raise an exception
+                r.table_create('table').run(db.conn)
+            except (RqlDriverError, RqlRuntimeError):
+                pass
+            else:
+                # Do some cleanup
+                r.table_drop('table').run(db.conn)
+                self.fail("Should have raised a RqlDriverError")

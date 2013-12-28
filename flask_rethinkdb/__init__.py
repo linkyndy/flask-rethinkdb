@@ -8,8 +8,9 @@ from flask import _app_ctx_stack as stack
 
 class RethinkDB(object):
 
-    def __init__(self, app=None):
+    def __init__(self, app=None, db=None):
         self.app = app
+        self.db = db
         if app is not None:
             self.init_app(app)
 
@@ -29,7 +30,7 @@ class RethinkDB(object):
         return r.connect(host=current_app.config['RETHINKDB_HOST'],
                          port=current_app.config['RETHINKDB_PORT'],
                          auth_key=current_app.config['RETHINKDB_AUTH'],
-                         db=current_app.config['RETHINKDB_DB'])
+                         db=self.db or current_app.config['RETHINKDB_DB'])
 
     @property
     def conn(self):
