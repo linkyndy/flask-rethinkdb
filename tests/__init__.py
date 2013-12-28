@@ -1,6 +1,6 @@
 from unittest import TestCase
 import rethinkdb as r
-from rethinkdb.errors import RqlDriverError
+from rethinkdb.errors import RqlDriverError, RqlRuntimeError
 
 from flask import Flask
 from flask_rethinkdb import RethinkDB
@@ -8,18 +8,21 @@ from flask_rethinkdb import RethinkDB
 
 class InitTests(TestCase):
 
-    def test_one(self):
+    def test_connection_one(self):
         app = Flask(__name__)
         db = RethinkDB(app)
 
         with app.test_request_context():
             try:
                 # Make sure RethinkDB is turned on!
-                r.db_list().run(db.conn)
-            except RqlDriverError as e:
+                r.table_create('table').run(db.conn)
+            except (RqlDriverError, RqlRuntimeError) as e:
                 self.fail(e)
+            else:
+                # Do some cleanup
+                r.table_drop('table').run(db.conn)
 
-    def test_two(self):
+    def test_connection_two(self):
         app = Flask(__name__)
         db = RethinkDB()
         db.init_app(app)
@@ -27,6 +30,9 @@ class InitTests(TestCase):
         with app.test_request_context():
             try:
                 # Make sure RethinkDB is turned on!
-                r.db_list().run(db.conn)
-            except RqlDriverError as e:
+                r.table_create('table').run(db.conn)
+            except (RqlDriverError, RqlRuntimeError) as e:
                 self.fail(e)
+            else:
+                # Do some cleanup
+                r.table_drop('table').run(db.conn)
