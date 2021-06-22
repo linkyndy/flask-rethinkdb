@@ -1,5 +1,5 @@
 from unittest import TestCase
-import rethinkdb as r
+from rethinkdb import r
 from rethinkdb.errors import RqlDriverError, RqlRuntimeError
 
 from flask import Flask
